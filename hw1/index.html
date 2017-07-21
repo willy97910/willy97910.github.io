@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Exposure Value</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body background="./background.jpg">
+
+
+    <div class="container-fluid">
+        <!--Header-->
+        <div id="header" class="jumbotron">
+            <h1 class="display-4" style="color:#E0E6EA"><b>Exposure Value</b></h1>
+
+            <h4 style="color:#F08080" class="indent">
+                <br/>For Photography :
+            </h4>
+            <h5 style="color:#F08080" class="indent">
+                <article><small>計算光圈與快門搭配, 是否適合拍攝一場景</small></article>
+            </h5>
+        </div>
+
+        <div id="content">
+            <div id="aside" class="asside">
+                <div role="alert" style="color:#E0E6EA">
+                    <strong>曝光值（Exposure Value，EV）</strong><br>代表能夠給出同樣曝光的所有相機光圈快門組合。
+                    <p><br>EV=(log(N^2)/t)/log2(EV值常以整數表示)<br>其中N是光圈（f值）；t是曝光時間（快門），單位秒</p>
+                </div>
+                <br>
+                <div style="color:#7DCAC0">
+                    <h5>各場景EV參考值</h5>
+                    <table align="center" valign="center">
+                        <tr>
+                            <th>EV值</th>
+                            <th class="indent">拍攝景物</th>
+                        </tr>
+                        <tr>
+                            <td>-5 ~ -3</td>
+                            <td class="indent"> 極光、月光</td>
+                        </tr>
+                        <tr>
+                            <td>0 ~ 2</td>
+                            <td class="indent"> 夜景的遠景</td>
+                        </tr>
+                        <tr>
+                            <td>4 ~ 8</td>
+                            <td class="indent">住家、辦公場所、明亮的夜景</td>
+                        </tr>
+                        <tr>
+                            <td>8 ~ 12</td>
+                            <td class="indent">體育賽事、舞台表演、畫廊</td>
+                        </tr>
+                        <tr>
+                            <td>12 ~ 16</td>
+                            <td class="indent">日落、彩虹、晴天的陰影區-一般場景</td>
+                        </tr>
+                        <tr>
+                            <td>> 16</td>
+                            <td class="indent">強烈陽光下的沙灘、雪景</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+            </div>
+
+
+
+            <div class="form-group row">
+                <label for="iso" style="color:antiquewhite" class="col-2 col-form-label"><h5 class="indent">ISO</h5></label>
+                <input type="number" class="form-control" id="iso" placeholder="ISO">
+            </div>
+
+            <div class="form-group row">
+                <label for="shutter" style="color:antiquewhite" class="col-2 col-form-label"><h5 class="indent"> 快門 </h5></label>
+                <input type="string" class="form-control" id="shutter" placeholder="Shutter (格式 如: 1/30 或 2)">
+                <h5 class="indent" style="color:antiquewhite"> 秒 </h5>
+                <div>
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="aperture" style="color:antiquewhite" class="col-2 col-form-label"><h5 class="indent">光圈</h5></label>
+                <input type="number" class="form-control" id="aperture" placeholder="Aperture (格式 如: 1.8)">
+                <h5 class="indent" style="color:antiquewhite"> F/x </h5>
+            </div>
+
+
+        </div>
+
+
+
+        <div class="form-group row"><button type="button" class="btn btn-primary" style="position:relative; left:60px; top: 0px; ">計算EV值</button></div>
+        <div class="form-group row">
+            <label for="example-number-input" class="col-2 col-form-label" style="color:azure"><h3 class="indent">EV</h3></label>
+            <div class="col-10">
+                <input class="form-control" type="number" id="ev">
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+    <!-- 自己寫的JavaScript -->
+    <script src="./js/index.js"></script>
+
+
+</body>
+
+</html>
