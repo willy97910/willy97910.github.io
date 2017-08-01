@@ -181,8 +181,10 @@
                 trace("Speed up !");
             }
             //添加阻擋物
-            if (len % 6 == 0 && len < 60 && carrier[turnX][turnY] == "food") {
-                addObject("block");
+            if (len % 2 == 0 && len < 60 && carrier[turnX][turnY] == "food") {
+                for (var a = 0; a < level; a++) {
+                    addObject("block");
+                }
             }
 
             //吃東西
