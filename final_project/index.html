@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Snake</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <!-- 引入我們自己寫的 CSS -->
+    <link rel="stylesheet" href="./css/index.css">
+
+
+    <script type="text/javascript">
+        function $(str) { 
+            return document.getElementById(str);
+        }
+
+        function $tag(str, target) {
+            target = target || document;
+            return target.getElementsByTagName(str);
+        }
+        //宣告 global variables
+        var WIDTH = 20, //網格寬度
+            HEIGHT = 20; //網格高度
+        var len = 3, //起始長度
+            speed, //速度
+            gridElems = multiArray(WIDTH, HEIGHT), //宣告網格
+            carrier, //物件存在
+            snake, //蛇每節的座標點
+            btnStart, //開始按鈕
+            thisScore,
+            snakeTimer, //蛇計時器
+            decelerateTimers = [], //隨機減速
+            accelerateTimers = [], //隨機加速
+            directkey, // 方向鍵
+            allowPress = true,
+            level = 1;
+
+
+
+        window.onload = function() {
+                info = $("say");
+                btnStart = $("btnStart");
+                initGrid(); //網格初始化
+                document.onkeydown = attachEvents; //綁定方向事件
+                btnStart.onclick = function(e) {
+                    btnStart.blur(); //firefox中必須釋放焦點
+                    start(); //遊戲開始
+                    btnStart.setAttribute("disabled", true);
+                    btnStart.style.color = "#aaa";
+                }
+            }
+            //開始遊戲
+        function start() {
+            len = 3;
+            speed = 10;
+            directkey = 39;
+            carrier = multiArray(WIDTH, HEIGHT);
+            snake = new Array();
+            thisScore = 0;
+            clear();
+            initSnake(); //蛇初始化
+            addObject("food");
+            walk();
+            addRandomDecelerate();
+            trace("Have Fun!");
+            trace(0, $("this_score"))
+        }
+        //建立格子
+        function initGrid() {
+            var body = $tag("body")[0];
+            var table = document.createElement("table"),
+                tbody = document.createElement("tbody")
+            for (var j = 0; j < HEIGHT; j++) {
+                var col = document.createElement("tr");
+                for (var i = 0; i < WIDTH; i++) {
+                    var row = document.createElement("td");
+                    gridElems[i][j] = col.appendChild(row);
+                }
+                tbody.appendChild(col);
+            }
+            table.appendChild(tbody);
+            $("snakeWrap").appendChild(table);
+        }
+        //創建蛇
+        function initSnake() {
+            var pointer = randomPointer(len - 1, len - 1, WIDTH / 2);
+            for (var i = 0; i < len; i++) {
+                var x = pointer[0] - i,
+                    y = pointer[1];
+                snake.push([x, y]);
+                carrier[x][y] = "cover";
+            }
+        }
+        //添加鍵盤事件
+        function attachEvents(e) {
+            e = e || event;
+            if (allowPress)
+                directkey = Math.abs(e.keyCode - directkey) != 2 && e.keyCode > 36 && e.keyCode < 41 ? e.keyCode : directkey; //非方向鍵、反向無效
+            allowPress = false;
+            return false;
+        }
+
+        function walk() {
+            if (snakeTimer) window.clearInterval(snakeTimer);
+            snakeTimer = window.setInterval(step, Math.floor(3000 / speed));
+        }
+
+        function step() {
+            //獲取目標點
+            var turnX = snake[0][0],
+                turnY = snake[0][1];
+            var tempY = snake[0][1];
+            console.log(turnX, turnY);
+            switch (directkey) {
+                case 37: //leftt
+                    turnX -= 1;
+                    break;
+                case 38: //up
+                    turnY -= 1;
+                    break;
+                case 39: //right
+                    turnX += 1;
+                    break
+                case 40: //down
+                    turnY += 1;
+                    break;
+            }
+            //碰到左右邊界，阻擋物，則結束遊戲
+            if (turnX >= WIDTH || turnX < 0 || carrier[turnX][turnY] == "block" || carrier[turnX][turnY] == "cover") {
+                trace("GAME OVER");
+                if (level == 6) {
+                    trace("Well Done !!");
+                }
+                trace("Restart", $("btnStart"));
+                if (getText($("top_score")) * 1 < thisScore) trace(thisScore, $("top_score"));
+                btnStart.removeAttribute("disabled");
+                btnStart.style.color = "#000";
+                window.clearInterval(snakeTimer);
+                for (var i = 0; i < decelerateTimers.length; i++)
+                    window.clearTimeout(decelerateTimers[i]);
+                for (var i = 0; i < accelerateTimers.length; i++)
+                    window.clearTimeout(accelerateTimers[i]);
+                return;
+            }
+
+            //碰到上下邊界
+            if (turnY >= HEIGHT || turnY < 0) {
+                if (turnX >= WIDTH) {
+                    turnX = 0;
+
+                } else if (turnX < 0) {
+                    turnX = WIDTH - 1;
+
+                } else if (turnY >= HEIGHT) {
+                    turnY = 0;
+                } else if (turnY < 0) {
+                    turnY = HEIGHT - 1;
+                }
+            }
+
+            //吃到食物後加速
+            if (len % 4 == 0 && speed < 60 && carrier[turnX][turnY] == "food") {
+                speed += 5;
+                walk();
+                trace("Speed up !");
+            }
+            //減速
+            if (carrier[turnX][turnY] == "decelerate") {
+                speed = 5;
+                walk();
+                trace("Slow down !");
+            }
+            //加速
+            if (carrier[turnX][turnY] == "accelerate") {
+                speed += 20;
+                walk();
+                trace("Speed up !");
+            }
+            //添加阻擋物
+            if (len % 6 == 0 && len < 60 && carrier[turnX][turnY] == "food") {
+                addObject("block");
+            }
+
+            //吃東西
+            if (carrier[turnX][turnY] != "food") {
+                var lastX = snake[snake.length - 1][0],
+                    lastY = snake[snake.length - 1][1];
+                carrier[lastX][lastY] = false;
+                gridElems[lastX][lastY].className = "";
+                snake.pop();
+            } else {
+                carrier[turnX][turnY] = false;
+                thisScore += speed;
+                trace(thisScore, $("this_score"));
+                trace("Delicious ~ ");
+                addObject("food");
+            }
+            if (thisScore > 600) {
+                level = 6;
+                trace(level, $("level"));
+            } else if (thisScore > 500) {
+                level = 5;
+                trace(level, $("level"));
+            } else if (thisScore > 400) {
+                level = 4;
+                trace(level, $("level"));
+            } else if (thisScore > 200) {
+                level = 3;
+                trace(level, $("level"));
+            } else if (thisScore > 100) {
+                level = 2;
+                trace(level, $("level"));
+            } else {
+                level = 1;
+                trace(level, $("level"));
+            }
+
+            snake.unshift([turnX, turnY]);
+            carrier[turnX][turnY] = "cover";
+            gridElems[turnX][turnY].className = "cover";
+
+            len = snake.length;
+            allowPress = true;
+        }
+
+        //add decelerate and accelerate
+        function addRandomDecelerate() {
+            var num = randowNum(1, 5);
+            for (var i = 0; i < num; i++) {
+                decelerateTimers.push(window.setTimeout(function() {
+                    addObject("decelerate")
+                }, randowNum(10000, 100000 - level * 1000)));
+                accelerateTimers.push(window.setTimeout(function() {
+                    addObject("accelerate")
+                }, randowNum(5000, 100000 - level * 1000)));
+            }
+        }
+        //Output some infornation
+        function trace(sth, who) {
+            who = who || info;
+            if (document.all) who.innerText = sth;
+            else who.textContent = sth;
+        }
+        //get informatin
+        function getText(target) {
+            if (document.all) return target.innerText;
+            else return target.textContent;
+        }
+        //創建二維陣列
+        function multiArray(m, n) {
+            var arr = new Array(n);
+            for (var i = 0; i < m; i++)
+                arr[i] = new Array(m);
+            return arr;
+        }
+        //清除畫面
+        function clear() {
+            for (var y = 0; y < gridElems.length; y++) {
+                for (var x = 0; x < gridElems[y].length; x++) {
+                    gridElems[x][y].className = "";
+                }
+            }
+        }
+        //add
+        function addObject(name) {
+            var p = randomPointer();
+            carrier[p[0]][p[1]] = name;
+            gridElems[p[0]][p[1]].className = name;
+        }
+        //產生指定範圍隨機點
+        function randomPointer(startX, startY, endX, endY) {
+            startX = startX || 0;
+            startY = startY || 0;
+            endX = endX || WIDTH;
+            endY = endY || HEIGHT
+            var p = [],
+                x = Math.floor(Math.random() * (endX - startX)) + startX,
+                y = Math.floor(Math.random() * (endY - startY)) + startY;
+            if (carrier[x][y]) return randomPointer(startX, startY, endX, endY);
+            p[0] = x;
+            p[1] = y;
+            return p;
+        }
+        //產生隨機整數
+        function randowNum(start, end) {
+            return Math.floor(Math.random() * (end - start)) + start;
+        }
+    </script>
+</head>
+
+<body background="./image/grass.jpg">
+
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h2>
+                <img src="./hello.png" width="50" height="50" class="d-inline-block align-top" alt=""> Snake
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <br/>
+            <h1 style="color:aliceblue">Start !</h1> <br/>
+            <p><a class="btn btn-secondary" href="#" id="btnStart" role="button">Start Game</a></p>
+
+            <h2>
+                <div id="say">Good luck!</div>
+            </h2>
+            <br/><br/><br/>
+            <div id="help">
+                <h5><img src="./image/yellow.png" width="30" height="30" class="d-inline-block align-top" alt=""> : Food </h5>(Grow up and get points!)<span></span>
+                <div><br/></div>
+                <h5><img src="./image/Black.png" width="30" height="30" class="d-inline-block align-top" alt=""> : Poison </h5>(Don't touch them! Be careful!)<span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div id="snakeWrap" style="position:-ms-page"></div>
+        </div>
+        <div class="col-md-4">
+            <div>
+                <br/>
+                <h1 style="color:aliceblue"><span>Level : <strong style="color:orangered" id="level">1</strong></span></h1>
+                <br/>
+                <h1 style="color:aliceblue"><span>Score<br/><strong id="this_score">0</strong></span></h1>
+                <br/>
+                <h2 style="color:#FFF7C0"><span>Highest Score ：<strong id="top_score">0</strong></span></h2>
+            </div>
+            <br/><br/>
+            <div id="help">
+                <h5><img src="./image/blue.png" width="30" height="30" class="d-inline-block align-top" alt=""> : Accelerator</h5>(Go faster! Get more points)<span></span>
+                <div><br/></div>
+                <h5><img src="./image/red.png" width="30" height="30" class="d-inline-block align-top" alt=""> : Break </h5>(Be cautious ~)<span>
+            </div>
+        </div>
+    </div>
+
+<br/><br/>
+    <footer>
+        <p style="color:azure">Designed by 賴昱瑋</p>
+        <p style="color:azure">
+            Reference: 
+            <a href="https://kknews.cc/other/p8komo2.html">REFRENCE 1</a>
+            <a href="http://fecbob.pixnet.net/blog/post/35678581-js%E8%B2%AA%E5%90%83%E8%9B%87%2B%E8%A9%B3%E7%B4%B0%E6%B3%A8%E9%87%8B%EF%BC%88%E8%BD%89%EF%BC%89">REFRENCE 2</a>
+            <a href="http://fecbob.pixnet.net/blog/post/39196279-%5Bjavascript%5D-17%E8%A1%8C%E4%BB%A3%E7%A2%BC%E7%9A%84%E8%B2%AA%E5%90%83%E8%9B%87%E5%B0%8F%E9%81%8A%E6%88%B2%7C">REFRENCE 3</a>
+        </p>
+    </footer>
+</body>
+
+</html>

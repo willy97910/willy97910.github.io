@@ -1,0 +1,73 @@
+* {
+    margin: 0;
+    padding: 0
+}
+
+.jumbotron {
+    /* 設定背景顏色 */
+    background-color: #333;
+    /* 設定文字顏色 */
+    color: white;
+}
+
+body {
+    text-align: center;
+    font-size: 14px
+}
+
+table {
+    margin: 40px auto 10px auto;
+    overflow: hidden;
+    border-collapse: collapse;
+}
+
+td {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #eee;
+    background: #FFF7C0;
+}
+
+.cover {
+    background: #C7F9FF;
+}
+
+.food {
+    background: #FFD967
+}
+
+.block {
+    background: #333
+}
+
+.decelerate {
+    background: #F9BBB0
+}
+
+.accelerate {
+    background: #66FAFF
+}
+
+#say {
+    margin-top: 50px;
+    color: white
+}
+
+#help {
+    width: 420px;
+    margin: 0 auto;
+    line-height: 17px;
+    color: white
+}
+
+#help span {
+    float: left;
+    margin-right: 10px
+}
+
+#help .box {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    border: 1px solid white
+}
