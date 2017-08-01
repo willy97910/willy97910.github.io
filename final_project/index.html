@@ -12,7 +12,6 @@
     <!-- 引入我們自己寫的 CSS -->
     <link rel="stylesheet" href="./css/index.css">
 
-
     <script type="text/javascript">
         function $(str) { 
             return document.getElementById(str);
@@ -38,8 +37,6 @@
             directkey, // 方向鍵
             allowPress = true,
             level = 1;
-
-
 
         window.onload = function() {
                 info = $("say");
@@ -103,7 +100,7 @@
             allowPress = false;
             return false;
         }
-
+        //前進
         function walk() {
             if (snakeTimer) window.clearInterval(snakeTimer);
             snakeTimer = window.setInterval(step, Math.floor(3000 / speed));
@@ -330,7 +327,7 @@
                 <br/>
                 <h1 style="color:aliceblue"><span>Score<br/><strong id="this_score">0</strong></span></h1>
                 <br/>
-                <h2 style="color:#FFF7C0"><span>Highest Score ：<strong id="top_score">0</strong></span></h2>
+                <h2 style="color:#FFF7C0"><span>Highest ：<strong id="top_score">0</strong></span></h2>
             </div>
             <br/><br/>
             <div id="help">
